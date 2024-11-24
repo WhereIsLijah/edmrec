@@ -61,9 +61,44 @@
   margin-top: 1rem;
 }
 
+/* Aside */
+.aside {
+  width: 15%;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+/* Sort Options */
+.sort-options label {
+  display: block;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.sort-options input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* Recent Searches List */
+.recent-search-list, .popular-search-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-search-item, .popular-search-item {
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  color: #00796b;
+  text-decoration: none;
+}
+
 /* List Container */
 .list-container {
-  width: 70%;
+  width: 80%;
 }
 
 /* Card */
@@ -72,7 +107,7 @@
   border: 1px solid #ccc;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+  padding: 0.5rem;
   margin-bottom: 1rem;
   text-align: left;
   cursor: pointer;
@@ -82,6 +117,21 @@
 .card:hover {
   transform: scale(0.95);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #009688;
+}
+
+/* CTA */
+.cta {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #00796b;
+  margin-bottom: 1rem;
 }
 
 /* Pagination */
@@ -99,42 +149,6 @@
   cursor: pointer;
 }
 
-/* Aside */
-.aside {
-  width: 25%;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-/* Recent Searches List */
-.recent-search-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.recent-search-item {
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  color: #00796b;
-  text-decoration: underline;
-}
-
-/* Popular Searches List */
-.popular-search-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 1rem 0 0;
-}
-
-.popular-search-item {
-  margin-bottom: 0.5rem;
-  color: #00796b;
-}
-
 /* Footer */
 .footer {
   background-color: #009688;
@@ -142,4 +156,53 @@
   padding: 1rem;
   text-align: center;
   width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .search-bar {
+    width: 80%;
+  }
+
+  .content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .aside {
+    width: 90%;
+    margin-bottom: 1rem;
+  }
+
+  .list-container {
+    width: 90%;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .search-bar {
+    width: 70%;
+  }
+
+  .aside {
+    width: 20%;
+  }
+
+  .list-container {
+    width: 75%;
+  }
+}
+
+@media (min-width: 1025px) {
+  .search-bar {
+    width: 60%;
+  }
+
+  .aside {
+    width: 15%;
+  }
+
+  .list-container {
+    width: 80%;
+  }
 }
