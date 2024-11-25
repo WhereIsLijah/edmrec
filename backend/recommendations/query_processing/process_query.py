@@ -93,6 +93,7 @@ def process_query(query_text):
                     'description': metadata.description,
                     'url': metadata.url,
                     'size': metadata.size,
+                    'format': metadata.format,
                     'similarity_score': similarity_score
                 })
             else:
@@ -104,7 +105,7 @@ def process_query(query_text):
         logger.error(f"Error processing query: {e}")
         raise
 
-if __name__ == "__main__":
-    query_text = "Find datasets about e-commerce sales"
-    results = process_query(query_text)
-    print(results)
+# if __name__ == "__main__":
+#     query_text = "Find datasets about e-commerce sales"
+#     results = process_query(query_text)
+#     print(results)

@@ -72,13 +72,13 @@
 }
 
 /* Sort Options */
-.sort-options label {
+.sort-options label, .rating-filter label {
   display: block;
   margin-bottom: 0.5rem;
   cursor: pointer;
 }
 
-.sort-options input[type="checkbox"] {
+.sort-options input[type="checkbox"], .rating-filter input[type="radio"] {
   margin-right: 0.5rem;
 }
 
@@ -117,6 +117,26 @@
 .card:hover {
   transform: scale(0.95);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-details {
+  flex: 1;
+}
+
+.card-meta {
+  text-align: right;
+}
+
+/* Rating */
+.rating {
+  font-size: 1.2rem;
+  color: #ffb400;
+  margin-top: 0.5rem;
 }
 
 /* Loading */

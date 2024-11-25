@@ -10,6 +10,7 @@ const EDMRecFrontend = () => {
   const [sortOrder, setSortOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showCTA, setShowCTA] = useState(false);
+  const [ratingFilter, setRatingFilter] = useState(null);
 
   const resultsPerPage = 10;
 
@@ -57,6 +58,10 @@ const EDMRecFrontend = () => {
     }
   };
 
+  const handleRatingFilterChange = (rating) => {
+    setRatingFilter(rating);
+  };
+
   const convertSizeToMB = (size) => {
     if (size.toLowerCase().endsWith('kb')) {
       return parseFloat(size) / 1024;
@@ -64,14 +69,21 @@ const EDMRecFrontend = () => {
     return parseFloat(size);
   };
 
-  const sortedDatasets = sortOrder ? datasets.sort((a, b) => {
-    if (sortOrder.field === 'name') {
-      if (sortOrder.order === 'asc') {
-        return a.title.localeCompare(b.title);
-      } else {
-        return b.title.localeCompare(a.title);
-      }
-    } else if (sortOrder.field === 'size') {
+  const getStarRating = (similarityScore) => {
+    if (similarityScore >= 0.65) return '⭐⭐⭐⭐⭐';
+    if (similarityScore >= 0.5) return '⭐⭐⭐⭐';
+    if (similarityScore >= 0.35) return '⭐⭐⭐';
+    if (similarityScore >= 0.2) return '⭐⭐';
+    return '⭐';
+  };
+
+  const filteredDatasets = ratingFilter ? datasets.filter(dataset => {
+    const rating = getStarRating(dataset.similarity_score);
+    return rating === ratingFilter;
+  }) : datasets;
+
+  const sortedDatasets = sortOrder ? filteredDatasets.sort((a, b) => {
+    if (sortOrder.field === 'size') {
       const sizeA = convertSizeToMB(a.size);
       const sizeB = convertSizeToMB(b.size);
       if (sortOrder.order === 'asc') {
@@ -81,7 +93,7 @@ const EDMRecFrontend = () => {
       }
     }
     return 0;
-  }) : datasets;
+  }) : filteredDatasets;
 
   const paginatedDatasets = sortedDatasets.slice(
     (currentPage - 1) * resultsPerPage,
@@ -115,31 +127,15 @@ const EDMRecFrontend = () => {
 
         <div className="content">
           <aside className="aside">
-            <h3>Sort By</h3>
+            <h3>Sort By Size</h3>
             <div className="sort-options">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={sortOrder?.field === 'name' && sortOrder?.order === 'asc'}
-                  onChange={() => handleSortOrderChange('name', 'asc')}
-                />
-                Name Ascending
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={sortOrder?.field === 'name' && sortOrder?.order === 'desc'}
-                  onChange={() => handleSortOrderChange('name', 'desc')}
-                />
-                Name Descending
-              </label>
               <label>
                 <input
                   type="checkbox"
                   checked={sortOrder?.field === 'size' && sortOrder?.order === 'asc'}
                   onChange={() => handleSortOrderChange('size', 'asc')}
                 />
-                Size Ascending
+                Ascending
               </label>
               <label>
                 <input
@@ -147,7 +143,65 @@ const EDMRecFrontend = () => {
                   checked={sortOrder?.field === 'size' && sortOrder?.order === 'desc'}
                   onChange={() => handleSortOrderChange('size', 'desc')}
                 />
-                Size Descending
+                Descending
+              </label>
+            </div>
+
+            <h3>Filter by Similarity Score</h3>
+            <div className="rating-filter">
+              <label>
+                <input
+                  type="radio"
+                  name="rating"
+                  value="⭐⭐⭐⭐⭐"
+                  onChange={() => handleRatingFilterChange('⭐⭐⭐⭐⭐')}
+                />
+                ⭐⭐⭐⭐⭐
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="rating"
+                  value="⭐⭐⭐⭐"
+                  onChange={() => handleRatingFilterChange('⭐⭐⭐⭐')}
+                />
+                ⭐⭐⭐⭐
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="rating"
+                  value="⭐⭐⭐"
+                  onChange={() => handleRatingFilterChange('⭐⭐⭐')}
+                />
+                ⭐⭐⭐
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="rating"
+                  value="⭐⭐"
+                  onChange={() => handleRatingFilterChange('⭐⭐')}
+                />
+                ⭐⭐
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="rating"
+                  value="⭐"
+                  onChange={() => handleRatingFilterChange('⭐')}
+                />
+                ⭐
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="rating"
+                  value=""
+                  onChange={() => handleRatingFilterChange(null)}
+                />
+                All
               </label>
             </div>
 
@@ -193,7 +247,12 @@ const EDMRecFrontend = () => {
                     <h3>{dataset.title}</h3>
                     <p>{dataset.description}</p>
                     <p>Size: {dataset.size}</p>
-                    {/* <p>Similarity Score: {dataset.similarity_score?.toFixed(2)}</p> */}
+                    <p>Format: {dataset.format}</p>
+                    {searchQuery && (
+                      <div className="rating">
+                        {getStarRating(dataset.similarity_score)}
+                      </div>
+                    )}
                   </div>
                 ))}
               </>
@@ -222,12 +281,12 @@ const EDMRecFrontend = () => {
 
       <footer className="footer">
         <p>
-          &copy; 2024 EDMRec 
+          &copy; 2024 EDMRec | 
           <a href="mailto:ayomideoduba@gmail.com" style={{ color: '#fff', textDecoration: 'none' }} target="_blank" rel="noopener noreferrer">
-            | ayomideoduba@gmail.com
+            ayomideoduba@gmail.com
           </a> & 
           <a href="mailto:cezeife@uwindsor.ca" style={{ color: '#fff', textDecoration: 'none' }} target="_blank" rel="noopener noreferrer">
-            cezeife@uwindsor.ca |
+            cezeife@uwindsor.ca
           </a>
         </p>
       </footer>
