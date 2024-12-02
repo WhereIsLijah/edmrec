@@ -13,6 +13,7 @@ const EDMRecFrontend = () => {
   const [ratingFilter, setRatingFilter] = useState(null);
 
   const resultsPerPage = 10;
+  const maxPagesToShow = 5;
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/api/datasets/')
@@ -70,16 +71,16 @@ const EDMRecFrontend = () => {
   };
 
   const getStarRating = (similarityScore) => {
-    if (similarityScore >= 0.65) return '⭐⭐⭐⭐⭐';
-    if (similarityScore >= 0.5) return '⭐⭐⭐⭐';
-    if (similarityScore >= 0.35) return '⭐⭐⭐';
-    if (similarityScore >= 0.2) return '⭐⭐';
-    return '⭐';
+    if (similarityScore >= 0.65) return <span className="stars five-stars">⭐⭐⭐⭐⭐</span>;
+    if (similarityScore >= 0.5) return <span className="stars four-stars">⭐⭐⭐⭐</span>;
+    if (similarityScore >= 0.35) return <span className="stars three-stars">⭐⭐⭐</span>;
+    if (similarityScore >= 0.2) return <span className="stars two-stars">⭐⭐</span>;
+    return <span className="stars one-star">⭐</span>;
   };
 
   const filteredDatasets = ratingFilter ? datasets.filter(dataset => {
     const rating = getStarRating(dataset.similarity_score);
-    return rating === ratingFilter;
+    return rating.props.children === ratingFilter;
   }) : datasets;
 
   const sortedDatasets = sortOrder ? filteredDatasets.sort((a, b) => {
@@ -101,6 +102,11 @@ const EDMRecFrontend = () => {
   );
 
   const totalPagesDynamic = Math.ceil(sortedDatasets.length / resultsPerPage);
+
+  const getPaginationGroup = () => {
+    let start = Math.floor((currentPage - 1) / maxPagesToShow) * maxPagesToShow;
+    return new Array(Math.min(maxPagesToShow, totalPagesDynamic - start)).fill().map((_, idx) => start + idx + 1);
+  };
 
   return (
     <div className="container">
@@ -260,19 +266,33 @@ const EDMRecFrontend = () => {
 
             {totalPagesDynamic > 1 && (
               <div className="pagination">
-                {Array.from({ length: totalPagesDynamic }, (_, i) => (
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className="page-button"
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                {getPaginationGroup().map((item, index) => (
                   <button
-                    key={i + 1}
-                    onClick={() => handlePageChange(i + 1)}
+                    key={index}
+                    onClick={() => handlePageChange(item)}
                     className="page-button"
                     style={{
-                      backgroundColor: currentPage === i + 1 ? '#009688' : '#f1f1f1',
-                      color: currentPage === i + 1 ? '#fff' : '#000',
+                      backgroundColor: currentPage === item ? '#009688' : '#f1f1f1',
+                      color: currentPage === item ? '#fff' : '#000',
                     }}
                   >
-                    {i + 1}
+                    {item}
                   </button>
                 ))}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="page-button"
+                  disabled={currentPage === totalPagesDynamic}
+                >
+                  Next
+                </button>
               </div>
             )}
           </section>
