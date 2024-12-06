@@ -5,14 +5,14 @@ const EDMRecFrontend = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [datasets, setDatasets] = useState([]);
   const [recentSearches, setRecentSearches] = useState([]);
-  const popularSearches = ['Sales Data', 'Customer Reviews', 'Product Metadata', 'Find datasets about e-commerce sales'];
+  const popularSearches = ['Sales Data', 'The impact of seasonal sales on consumer review for electronics', 'Product Metadata', 'Find datasets about e-commerce sales'];
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showCTA, setShowCTA] = useState(false);
   const [ratingFilter, setRatingFilter] = useState(null);
 
-  const resultsPerPage = 5;
+  const resultsPerPage = 10;
   const maxPagesToShow = 5;
 
   useEffect(() => {
