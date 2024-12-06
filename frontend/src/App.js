@@ -12,7 +12,7 @@ const EDMRecFrontend = () => {
   const [showCTA, setShowCTA] = useState(false);
   const [ratingFilter, setRatingFilter] = useState(null);
 
-  const resultsPerPage = 10;
+  const resultsPerPage = 5;
   const maxPagesToShow = 5;
 
   useEffect(() => {
@@ -35,7 +35,8 @@ const EDMRecFrontend = () => {
       })
         .then(response => response.json())
         .then(data => {
-          setDatasets(data);
+          const top20Results = data.slice(0, 20);
+          setDatasets(top20Results);
           setRecentSearches((prevSearches) => [...new Set([query, ...prevSearches])]);
           setLoading(false);
           setShowCTA(true);
@@ -53,7 +54,7 @@ const EDMRecFrontend = () => {
 
   const handleSortOrderChange = (field, order) => {
     if (sortOrder && sortOrder.field === field && sortOrder.order === order) {
-      setSortOrder(null); // Reset to default
+      setSortOrder(null);
     } else {
       setSortOrder({ field, order });
     }
@@ -78,23 +79,27 @@ const EDMRecFrontend = () => {
     return <span className="stars one-star">⭐</span>;
   };
 
-  const filteredDatasets = ratingFilter ? datasets.filter(dataset => {
-    const rating = getStarRating(dataset.similarity_score);
-    return rating.props.children === ratingFilter;
-  }) : datasets;
+  const filteredDatasets = ratingFilter
+    ? datasets.filter(dataset => {
+        const rating = getStarRating(dataset.similarity_score);
+        return rating.props.children === ratingFilter;
+      })
+    : datasets;
 
-  const sortedDatasets = sortOrder ? filteredDatasets.sort((a, b) => {
-    if (sortOrder.field === 'size') {
-      const sizeA = convertSizeToMB(a.size);
-      const sizeB = convertSizeToMB(b.size);
-      if (sortOrder.order === 'asc') {
-        return sizeA - sizeB;
-      } else {
-        return sizeB - sizeA;
-      }
-    }
-    return 0;
-  }) : filteredDatasets;
+  const sortedDatasets = sortOrder
+    ? filteredDatasets.sort((a, b) => {
+        if (sortOrder.field === 'size') {
+          const sizeA = convertSizeToMB(a.size);
+          const sizeB = convertSizeToMB(b.size);
+          if (sortOrder.order === 'asc') {
+            return sizeA - sizeB;
+          } else {
+            return sizeB - sizeA;
+          }
+        }
+        return 0;
+      })
+    : filteredDatasets;
 
   const paginatedDatasets = sortedDatasets.slice(
     (currentPage - 1) * resultsPerPage,
@@ -131,7 +136,14 @@ const EDMRecFrontend = () => {
           </button>
         </div>
 
-        <div className="content">
+        {loading && (
+          <div className="loading-screen">
+            <div className="loader"></div>
+            <p className="loading-message">Please wait while we recommend datasets for you...</p>
+          </div>
+        )}
+
+        <div className="content" style={{ display: loading ? 'none' : 'grid' }}>
           <aside className="aside">
             <h3>Sort By Size</h3>
             <div className="sort-options">
@@ -239,32 +251,26 @@ const EDMRecFrontend = () => {
           </aside>
 
           <section className="list-container">
-            {loading ? (
-              <div className="loading">Loading...</div>
-            ) : (
-              <>
-                {showCTA && <div className="cta">Click on a card to view the dataset</div>}
-                {paginatedDatasets.map((dataset) => (
-                  <div
-                    key={dataset.id}
-                    className="card"
-                    onClick={() => window.open(dataset.url, '_blank')}
-                  >
-                    <h3>{dataset.title}</h3>
-                    <p>{dataset.description}</p>
-                    <p>Size: {dataset.size}</p>
-                    <p>Format: {dataset.format}</p>
-                    {searchQuery && (
-                      <div className="rating">
-                        {getStarRating(dataset.similarity_score)}
-                      </div>
-                    )}
+            {showCTA && <div className="cta">Click on a card to view the dataset</div>}
+            {paginatedDatasets.map((dataset) => (
+              <div
+                key={dataset.id}
+                className="card"
+                onClick={() => window.open(dataset.url, '_blank')}
+              >
+                <h3>{dataset.title}</h3>
+                <p>{dataset.description}</p>
+                <p>Size: {dataset.size}</p>
+                <p>Format: {dataset.format}</p>
+                {searchQuery && (
+                  <div className="rating">
+                    {getStarRating(dataset.similarity_score)}
                   </div>
-                ))}
-              </>
-            )}
+                )}
+              </div>
+            ))}
 
-            {totalPagesDynamic > 1 && (
+            {totalPagesDynamic > 1 && !loading && (
               <div className="pagination">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
@@ -277,11 +283,7 @@ const EDMRecFrontend = () => {
                   <button
                     key={index}
                     onClick={() => handlePageChange(item)}
-                    className="page-button"
-                    style={{
-                      backgroundColor: currentPage === item ? '#009688' : '#f1f1f1',
-                      color: currentPage === item ? '#fff' : '#000',
-                    }}
+                    className={`page-button ${currentPage === item ? 'active' : ''}`}
                   >
                     {item}
                   </button>
@@ -306,7 +308,7 @@ const EDMRecFrontend = () => {
             ayomideoduba@gmail.com
           </a> & 
           <a href="mailto:cezeife@uwindsor.ca" style={{ color: '#fff', textDecoration: 'none' }} target="_blank" rel="noopener noreferrer">
-            cezeife@uwindsor.ca
+            cezeife@uwindsor.ca |
           </a>
         </p>
       </footer>
